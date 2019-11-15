@@ -46,9 +46,9 @@ Follow these steps to get your development environment set up:
      ```
      
   4. Next, within the `\EmployeeApi` directory, launch the back end by running:
-  	```
-	 dotnet run
-	 ```	
+  	 ```
+     dotnet run
+     ```		
 	 
   5. Launch [http://localhost:5000/api](http://localhost:5000/api) in your browser to view the API
   
