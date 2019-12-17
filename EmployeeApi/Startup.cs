@@ -1,4 +1,5 @@
 ﻿using EmployeeApi.Data;
+using EmployeeApi.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -22,6 +23,9 @@ namespace EmployeeApi
         {
             // DB Context
             services.AddDbContext<EmployeeApiContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+            // repository services
+            services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }

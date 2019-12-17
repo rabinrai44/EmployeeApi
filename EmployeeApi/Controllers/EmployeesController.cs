@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EmployeeApi.Data;
 using EmployeeApi.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace EmployeeApi.Controllers
 {
@@ -14,25 +12,30 @@ namespace EmployeeApi.Controllers
     [ApiController]
     public class EmployeesController : ControllerBase
     {
-        private readonly EmployeeApiContext _context;
+        private readonly IEmployeeRepository _employeeRepository;
 
-        public EmployeesController(EmployeeApiContext context)
+        public EmployeesController(IEmployeeRepository employeeRepository)
         {
-            _context = context;
+            _employeeRepository = employeeRepository;
         }
 
         // GET: api/employees
         [HttpGet]
         public ActionResult<List<Employee>> GetEmployees()
         {
-            return Ok(_context.Employees.ToList());
+            return Ok(_employeeRepository.GetAllEmployees().ToList());
         }
 
         // GET: api/employees/id
         [HttpGet("{id}")]
         public ActionResult<Employee> GetEmployee(int id)
         {
-            var employee = _context.Employees.Find(id);
+            var employee = _employeeRepository.GetEmployeeById(id);
+
+            if (employee == null)
+            {
+                return NotFound("User not found");
+            }
 
             return Ok(employee);
         }
@@ -44,8 +47,7 @@ namespace EmployeeApi.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            _context.Employees.Add(employee);
-            _context.SaveChanges();
+            _employeeRepository.Add(employee);
 
             return NoContent();
         }
@@ -60,8 +62,7 @@ namespace EmployeeApi.Controllers
             if (id != employee.Id)
                 return BadRequest();
 
-            _context.Entry(employee).State = EntityState.Modified;
-            _context.SaveChanges();
+            _employeeRepository.Update(employee);
 
             return NoContent();
         }
@@ -73,13 +74,12 @@ namespace EmployeeApi.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var employee = _context.Employees.Find(id);
+            var employee = _employeeRepository.GetEmployeeById(id);
 
             if (employee == null)
                 return NotFound();
 
-            _context.Employees.Remove(employee);
-            _context.SaveChanges();
+            _employeeRepository.Delete(employee);
 
             return Ok(employee);
         }
